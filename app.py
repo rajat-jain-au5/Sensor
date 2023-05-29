@@ -3,20 +3,20 @@ from src.exception import CustomException
 from src.logger import logging as lg
 import os,sys
 
-from src.pipeline.train_pipeline import TrainPipeline
+from src.pipeline.train_pipeline import TraininingPipeline
 from src.pipeline.predict_pipeline import PredictionPipeline
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return jsonify("home")
+    return "Welcome to my application"
 
 
 @app.route("/train")
 def train_route():
     try:
-        train_pipeline = TrainPipeline()
+        train_pipeline = TraininingPipeline()
         train_pipeline.run_pipeline()
 
         return "Training Completed."
@@ -24,14 +24,17 @@ def train_route():
     except Exception as e:
         raise CustomException(e,sys)
 
-@app.route('/upload', methods=['POST', 'GET'])
+@app.route('/predict', methods=['POST', 'GET'])
 def upload():
     
     try:
 
 
         if request.method == 'POST':
+            # it is a object of prediction pipeline
             prediction_pipeline = PredictionPipeline(request)
+            
+            #now we are running this run pipeline method
             prediction_file_detail = prediction_pipeline.run_pipeline()
 
             lg.info("prediction completed. Downloading prediction file.")
@@ -46,6 +49,6 @@ def upload():
         raise CustomException(e,sys)
     
 
-
+#execution will start from here
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug= True)
